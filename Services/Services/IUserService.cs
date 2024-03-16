@@ -1,4 +1,4 @@
-using Challengify.Models;
+using Challengify.Entities.Models;
 
 namespace Challengify.Services;
 

@@ -1,8 +1,10 @@
-using Challengify.Models;
 using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
+using Challengify.Entities.Models;
 
-public class AppDbContext : DbContext
+namespace Challengify.Entities.Database;
+
+public class AppDbContext : DbContext, IAppDbContext
 {
     public DbSet<Challenge> Challenges { get; set; }
     public DbSet<Result> Results { get; set; }

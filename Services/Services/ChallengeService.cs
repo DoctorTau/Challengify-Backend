@@ -1,12 +1,13 @@
-using Challengify.Models;
+using Challengify.Entities.Database;
+using Challengify.Entities.Models;
 
 namespace Challengify.Services;
 
 public class ChallengeService : IChallengeService
 {
-    private readonly AppDbContext _dbContext;
+    private readonly IAppDbContext _dbContext;
 
-    public ChallengeService(AppDbContext dbContext)
+    public ChallengeService(IAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Challengify.Models;
+namespace Challengify.Entities.Models;
 
 public enum UserStatus
 {

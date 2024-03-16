@@ -1,12 +1,13 @@
-using Challengify.Models;
+using Challengify.Entities.Database;
+using Challengify.Entities.Models;
 
 namespace Challengify.Services;
 
 public class ResultService : IResultService
 {
-    private readonly AppDbContext _dbContext;
+    private readonly IAppDbContext _dbContext;
 
-    public ResultService(AppDbContext dbContext)
+    public ResultService(IAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

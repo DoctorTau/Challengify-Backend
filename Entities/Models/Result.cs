@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Challengify.Models;
+namespace Challengify.Entities.Models;
 
 /// <summary>
 /// Represents a result of a challenge.
