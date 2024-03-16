@@ -102,3 +102,6 @@ ASALocalRun/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Env files
+.env
