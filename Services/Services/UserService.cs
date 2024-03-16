@@ -1,6 +1,7 @@
 using Challengify.Entities.Database;
 using Challengify.Entities.Models;
 using Challengify.Services;
+using Microsoft.EntityFrameworkCore;
 
 public class UserService : IUserService
 {
@@ -29,6 +30,12 @@ public class UserService : IUserService
     public async Task<User> GetUserAsync(int userId)
     {
         User user = await _dbContext.Users.FindAsync(userId) ?? throw new KeyNotFoundException("User not found");
+        return user;
+    }
+
+    public async Task<User> GetUserByEmailAsync(string email)
+    {
+        User user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email) ?? throw new KeyNotFoundException("User not found");
         return user;
     }
 

@@ -15,6 +15,13 @@ public interface IUserService
     public Task<User> CreateUserAsync(User user);
 
     /// <summary>
+    /// Retrieves a user by their email.
+    /// </summary>
+    /// <param name="email"> Email to find the user</param>
+    /// <returns> User with povided email</returns>
+    public Task<User> GetUserByEmailAsync(string email);
+
+    /// <summary>
     /// Retrieves a user by their ID.
     /// </summary>
     /// <param name="userId">The ID of the user to retrieve.</param>

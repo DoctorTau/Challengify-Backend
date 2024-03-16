@@ -21,12 +21,14 @@ public class User
     public required string Email { get; set; }
     [Required]
     public required string PasswordHash { get; set; }
-    public required DateTime CreatedAt { get; set; } = DateTime.Now.ToUniversalTime();
-    public required UserStatus Status { get; set; } = UserStatus.Regular;
+    [Required]
+    public required string PasswordSalt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.Now.ToUniversalTime();
+    public UserStatus Status { get; set; } = UserStatus.Regular;
 
     // Navigation properties
-    public virtual ICollection<Challenge> Challenges { get; set; } = new List<Challenge>();
-    public virtual ICollection<Result> Results { get; set; } = new List<Result>();
+    public virtual ICollection<Challenge> Challenges { get; set; } = [];
+    public virtual ICollection<Result> Results { get; set; } = [];
 
     public void Update(User user)
     {
