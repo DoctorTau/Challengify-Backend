@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Challengify-Backend", "Challengify-Backend\Challengify-Backend.csproj", "{12D9F278-5D84-415A-BE8F-EA9E7B961D89}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "Entities\Entities.csproj", "{1C9C3E8B-7BE2-4947-9EEA-323971A96341}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{12D9F278-5D84-415A-BE8F-EA9E7B961D89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12D9F278-5D84-415A-BE8F-EA9E7B961D89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12D9F278-5D84-415A-BE8F-EA9E7B961D89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C9C3E8B-7BE2-4947-9EEA-323971A96341}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C9C3E8B-7BE2-4947-9EEA-323971A96341}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C9C3E8B-7BE2-4947-9EEA-323971A96341}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C9C3E8B-7BE2-4947-9EEA-323971A96341}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
