@@ -9,11 +9,11 @@ namespace Challengify.Entities.Models;
 public class Result
 {
     [Key]
-    public long ResultId { get; set; }
+    public int ResultId { get; set; }
     [Required]
-    public long UserId { get; set; }
+    public int UserId { get; set; }
     [Required]
-    public long ChallengeId { get; set; }
+    public int ChallengeId { get; set; }
     [Required, MaxLength(128)]
     public required string Name { get; set; }
     [MaxLength(512)]

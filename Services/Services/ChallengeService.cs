@@ -19,7 +19,7 @@ public class ChallengeService : IChallengeService
         return challenge;
     }
 
-    public async Task<Challenge> DeleteChallengeAsync(long challengeId)
+    public async Task<Challenge> DeleteChallengeAsync(int challengeId)
     {
         Challenge challenge = await _dbContext.Challenges.FindAsync(challengeId) ?? throw new KeyNotFoundException("Challenge not found");
         _dbContext.Challenges.Remove(challenge);
@@ -27,7 +27,7 @@ public class ChallengeService : IChallengeService
         return challenge;
     }
 
-    public async Task<Challenge> GetChallengeAsync(long challengeId)
+    public async Task<Challenge> GetChallengeAsync(int challengeId)
     {
         Challenge challenge = await _dbContext.Challenges.FindAsync(challengeId) ?? throw new KeyNotFoundException("Challenge not found");
         return challenge;

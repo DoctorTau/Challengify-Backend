@@ -18,7 +18,7 @@ public class UserService : IUserService
         return user;
     }
 
-    public async Task<User> DeleteUserAsync(long userId)
+    public async Task<User> DeleteUserAsync(int userId)
     {
         User user = await _dbContext.Users.FindAsync(userId) ?? throw new KeyNotFoundException("User not found");
         _dbContext.Users.Remove(user);
@@ -26,7 +26,7 @@ public class UserService : IUserService
         return user;
     }
 
-    public async Task<User> GetUserAsync(long userId)
+    public async Task<User> GetUserAsync(int userId)
     {
         User user = await _dbContext.Users.FindAsync(userId) ?? throw new KeyNotFoundException("User not found");
         return user;

@@ -19,7 +19,7 @@ public class ResultService : IResultService
         return result;
     }
 
-    public async Task<Result> DeleteResultAsync(long resultId)
+    public async Task<Result> DeleteResultAsync(int resultId)
     {
         Result result = await _dbContext.Results.FindAsync(resultId) ?? throw new KeyNotFoundException("Result not found");
         _dbContext.Results.Remove(result);
@@ -27,7 +27,7 @@ public class ResultService : IResultService
         return result;
     }
 
-    public async Task<Result> GetResultAsync(long resultId)
+    public async Task<Result> GetResultAsync(int resultId)
     {
         Result result = await _dbContext.Results.FindAsync(resultId) ?? throw new KeyNotFoundException("Result not found");
         return result;

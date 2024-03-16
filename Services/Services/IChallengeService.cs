@@ -19,7 +19,7 @@ public interface IChallengeService
     /// </summary>
     /// <param name="challengeId">The ID of the challenge to retrieve.</param>
     /// <returns>The retrieved challenge.</returns>
-    public Task<Challenge> GetChallengeAsync(long challengeId);
+    public Task<Challenge> GetChallengeAsync(int challengeId);
 
     /// <summary>
     /// Updates an existing challenge.
@@ -33,5 +33,5 @@ public interface IChallengeService
     /// </summary>
     /// <param name="challengeId">The ID of the challenge to delete.</param>
     /// <returns>The deleted challenge.</returns>
-    public Task<Challenge> DeleteChallengeAsync(long challengeId);
+    public Task<Challenge> DeleteChallengeAsync(int challengeId);
 }

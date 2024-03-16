@@ -19,7 +19,7 @@ public interface IUserService
     /// </summary>
     /// <param name="userId">The ID of the user to retrieve.</param>
     /// <returns>The user object corresponding to the specified ID.</returns>
-    public Task<User> GetUserAsync(long userId);
+    public Task<User> GetUserAsync(int userId);
 
     /// <summary>
     /// Updates an existing user.
@@ -33,5 +33,5 @@ public interface IUserService
     /// </summary>
     /// <param name="userId">The ID of the user to delete.</param>
     /// <returns>The deleted user object.</returns>
-    public Task<User> DeleteUserAsync(long userId);
+    public Task<User> DeleteUserAsync(int userId);
 }

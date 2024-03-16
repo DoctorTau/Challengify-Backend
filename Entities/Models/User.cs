@@ -14,7 +14,7 @@ public enum UserStatus
 public class User
 {
     [Key]
-    public long UserId { get; set; }
+    public int UserId { get; set; }
     [Required, MaxLength(64)]
     public required string Name { get; set; }
     [Required, EmailAddress, MaxLength(128)]

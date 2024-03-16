@@ -14,7 +14,7 @@ public enum ChallengeStatus
 public class Challenge
 {
     [Key]
-    public long ChallengeId { get; set; }
+    public int ChallengeId { get; set; }
     [Required, MaxLength(256)]
     public required string Name { get; set; }
     [MaxLength(1024)]
@@ -23,8 +23,8 @@ public class Challenge
     public int Periodicity { get; set; } = 24; // in hours
 
     // Navigation properties
-    public virtual ICollection<Result> Results { get; set; } = new List<Result>();
-    public virtual ICollection<User> Participants { get; set; } = new List<User>();
+    public virtual ICollection<Result> Results { get; set; } = [];
+    public virtual ICollection<User> Participants { get; set; } = [];
 
     public void Update(Challenge challenge)
     {

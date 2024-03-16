@@ -19,7 +19,7 @@ public interface IResultService
     /// </summary>
     /// <param name="resultId">The ID of the result to retrieve.</param>
     /// <returns>The retrieved result.</returns>
-    public Task<Result> GetResultAsync(long resultId);
+    public Task<Result> GetResultAsync(int resultId);
 
     /// <summary>
     /// Updates an existing result asynchronously.
@@ -33,5 +33,5 @@ public interface IResultService
     /// </summary>
     /// <param name="resultId">The ID of the result to delete.</param>
     /// <returns>The deleted result.</returns>
-    public Task<Result> DeleteResultAsync(long resultId);
+    public Task<Result> DeleteResultAsync(int resultId);
 }
