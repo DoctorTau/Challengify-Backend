@@ -27,5 +27,14 @@ public class User
     // Navigation properties
     public virtual ICollection<Challenge> Challenges { get; set; } = new List<Challenge>();
     public virtual ICollection<Result> Results { get; set; } = new List<Result>();
+
+    public void Update(User user)
+    {
+        Name = user.Name;
+        Email = user.Email;
+        PasswordHash = user.PasswordHash;
+        CreatedAt = user.CreatedAt;
+        Status = user.Status;
+    }
 }
 

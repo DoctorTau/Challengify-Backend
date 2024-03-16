@@ -25,4 +25,12 @@ public class Challenge
     // Navigation properties
     public virtual ICollection<Result> Results { get; set; } = new List<Result>();
     public virtual ICollection<User> Participants { get; set; } = new List<User>();
+
+    public void Update(Challenge challenge)
+    {
+        Name = challenge.Name;
+        Description = challenge.Description;
+        StartDate = challenge.StartDate;
+        Periodicity = challenge.Periodicity;
+    }
 }

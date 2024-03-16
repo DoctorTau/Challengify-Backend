@@ -26,4 +26,14 @@ public class Result
     public virtual required User User { get; set; }
     [ForeignKey("ChallengeId")]
     public virtual required Challenge Challenge { get; set; }
+
+    public void Update(Result result)
+    {
+        UserId = result.UserId;
+        ChallengeId = result.ChallengeId;
+        Name = result.Name;
+        Description = result.Description;
+        Timestamp = result.Timestamp;
+        MediaPath = result.MediaPath;
+    }
 }
