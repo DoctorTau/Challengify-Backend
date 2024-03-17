@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Challengify.Entities.Database;
 using Challengify.Services;
 using DotNetEnv;
@@ -7,7 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 Env.Load(Path.Combine("..", ".env")); // Load the .env file at the application startup
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+});
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -44,6 +48,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthorization();
 
 app.MapControllers();
 

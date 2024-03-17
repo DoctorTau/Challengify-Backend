@@ -1,4 +1,5 @@
 using Challengify.Entities.Models;
+using Challengify.Entities.Models.DataTransferObject;
 
 namespace Challengify.Services;
 
@@ -34,4 +35,12 @@ public interface IChallengeService
     /// <param name="challengeId">The ID of the challenge to delete.</param>
     /// <returns>The deleted challenge.</returns>
     public Task<Challenge> DeleteChallengeAsync(int challengeId);
+
+    /// <summary>
+    /// Creates a new challenge asynchronously.
+    /// </summary>
+    /// <param name="challenge"> Challenge creation params </param>
+    /// <param name="userId"> Creator</param>
+    /// <returns>Created challenge</returns>
+    public Task<Challenge> CreateChallengeAsync(ChallengeCreationDto challenge, int userId);
 }
