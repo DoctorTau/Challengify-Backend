@@ -44,7 +44,7 @@ public class AuthController : ControllerBase
             {
                 return Unauthorized();
             }
-            return user;
+            return Ok(_passwordService.CreateJwtToken(user));
         }
         catch (KeyNotFoundException)
         {

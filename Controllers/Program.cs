@@ -1,7 +1,11 @@
 using Challengify.Entities.Database;
 using Challengify.Services;
+using DotNetEnv;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Env.Load(Path.Combine("..", ".env")); // Load the .env file at the application startup
 
 builder.Services.AddControllers();
 
@@ -16,6 +20,19 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IChallengeService, ChallengeService>();
 builder.Services.AddScoped<IResultService, ResultService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
+
+builder.Services.AddAuthentication().AddJwtBearer(
+    options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET")!))
+        };
+    }
+);
 
 var app = builder.Build();
 

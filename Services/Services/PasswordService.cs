@@ -1,9 +1,37 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
+using Challengify.Entities.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Challengify.Services;
 
 public class PasswordService : IPasswordService
 {
+    private static readonly string _jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? throw new ArgumentNullException("JWT_SECRET environment variable not set.");
+    public string CreateJwtToken(User user)
+    {
+        var claims = new List<Claim>
+        {
+            new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+            new(ClaimTypes.Name, user.Name),
+            new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Role, user.Status.ToString())
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSecret));
+
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            claims: claims,
+            expires: DateTime.Now.AddDays(10),
+            signingCredentials: creds);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
     public void CreatePasswordHash(string password, out string passwordHash, out string passwordSalt)
     {
         if (password == null) throw new ArgumentNullException(nameof(password));
