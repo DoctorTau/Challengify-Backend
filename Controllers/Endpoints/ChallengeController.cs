@@ -63,6 +63,24 @@ public class ChallengeController : ControllerBase
         }
     }
 
+    [HttpGet("{id}/results")]
+    public async Task<IActionResult> GetChallengeResults(int id)
+    {
+        try
+        {
+            var results = await _challengeService.GetChallengeResultsAsync(id);
+            return Ok(results);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound("Challenge not found");
+        }
+        catch
+        {
+            return StatusCode(500);
+        }
+    }
+
     [HttpPut("{id}/add-participant"), Authorize]
     public async Task<IActionResult> AddParticipant(int id)
     {

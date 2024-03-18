@@ -77,4 +77,18 @@ public class ChallengeService : IChallengeService
         await _dbContext.SaveChangesAsync();
         return challenge;
     }
+
+    public async Task<List<Result>> GetUserResultsAsync(int userId)
+    {
+        List<Result> userResults = await _dbContext.Results.Where(r => r.UserId == userId).ToListAsync();
+
+        return userResults;
+    }
+
+    public async Task<List<Result>> GetChallengeResultsAsync(int challengeId)
+    {
+        Challenge challenge = await GetChallengeAsync(challengeId);
+        List<Result> challengeResults = (List<Result>)challenge.Results;
+        return challengeResults;
+    }
 }
