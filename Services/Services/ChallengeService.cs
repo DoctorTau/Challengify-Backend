@@ -1,6 +1,7 @@
 using Challengify.Entities.Database;
 using Challengify.Entities.Models;
 using Challengify.Entities.Models.DataTransferObject;
+using Microsoft.EntityFrameworkCore;
 
 namespace Challengify.Services;
 
@@ -52,6 +53,12 @@ public class ChallengeService : IChallengeService
     {
         Challenge challenge = await _dbContext.Challenges.FindAsync(challengeId) ?? throw new KeyNotFoundException("Challenge not found");
         return challenge;
+    }
+
+    public async Task<List<Challenge>> GetUserChallengesAsync(int userId)
+    {
+        List<Challenge> userChallenges = await _dbContext.Challenges.Where(c => c.Participants.Any(p => p.UserId == userId)).ToListAsync();
+        return userChallenges;
     }
 
     public async Task<Challenge> UpdateChallengeAsync(Challenge challenge)

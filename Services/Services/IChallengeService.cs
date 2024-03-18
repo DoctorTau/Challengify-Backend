@@ -43,4 +43,11 @@ public interface IChallengeService
     /// <param name="userId"> Creator</param>
     /// <returns>Created challenge</returns>
     public Task<Challenge> CreateChallengeAsync(ChallengeCreationDto challenge, int userId);
+
+    /// <summary>
+    /// Retrieves the challenges associated with a specific user.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of challenges.</returns>
+    public Task<List<Challenge>> GetUserChallengesAsync(int userId);
 }

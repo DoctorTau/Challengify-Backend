@@ -44,6 +44,25 @@ public class ChallengeController : ControllerBase
         }
     }
 
+    [HttpGet("user"), Authorize]
+    public async Task<IActionResult> GetUserChallenges()
+    {
+        try
+        {
+            int userId = GetUserIdFromToken();
+            var challenges = await _challengeService.GetUserChallengesAsync(userId);
+            return Ok(challenges);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized();
+        }
+        catch
+        {
+            return StatusCode(500);
+        }
+    }
+
     private int GetUserIdFromToken()
     {
         if (!int.TryParse(User?.FindFirst(c => c.Type.Contains("nameidentifier"))?.Value, out int userId))
