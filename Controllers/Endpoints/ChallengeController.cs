@@ -63,6 +63,25 @@ public class ChallengeController : ControllerBase
         }
     }
 
+    [HttpPut("{id}/add-participant"), Authorize]
+    public async Task<IActionResult> AddParticipant(int id)
+    {
+        try
+        {
+            int userId = GetUserIdFromToken();
+            var challenge = await _challengeService.AddParticipantAsync(id, userId);
+            return Ok(challenge);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized();
+        }
+        catch
+        {
+            return StatusCode(500);
+        }
+    }
+
     private int GetUserIdFromToken()
     {
         if (!int.TryParse(User?.FindFirst(c => c.Type.Contains("nameidentifier"))?.Value, out int userId))

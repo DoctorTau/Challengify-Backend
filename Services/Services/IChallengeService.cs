@@ -50,4 +50,12 @@ public interface IChallengeService
     /// <param name="userId">The ID of the user.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of challenges.</returns>
     public Task<List<Challenge>> GetUserChallengesAsync(int userId);
+
+    /// <summary>
+    /// Adds a participant to a challenge asynchronously.
+    /// </summary>
+    /// <param name="challengeId">The ID of the challenge.</param>
+    /// <param name="userId">The ID of the user to add as a participant.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains the updated Challenge object.</returns>
+    public Task<Challenge> AddParticipantAsync(int challengeId, int userId);
 }

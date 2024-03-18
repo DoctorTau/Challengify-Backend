@@ -14,6 +14,12 @@ public class UserService : IUserService
 
     public async Task<User> CreateUserAsync(User user)
     {
+        // check if user with the same name and email already exists
+        if (await _dbContext.Users.AnyAsync(u => u.Email == user.Email) || await _dbContext.Users.AnyAsync(u => u.Name == user.Name))
+        {
+            throw new InvalidOperationException("User with the same email or name already exists");
+        }
+
         await _dbContext.Users.AddAsync(user);
         await _dbContext.SaveChangesAsync();
         return user;

@@ -68,4 +68,13 @@ public class ChallengeService : IChallengeService
         await _dbContext.SaveChangesAsync();
         return existingChallenge;
     }
+
+    public async Task<Challenge> AddParticipantAsync(int challengeId, int userId)
+    {
+        Challenge challenge = await _dbContext.Challenges.Include(c => c.Participants).FirstOrDefaultAsync(c => c.ChallengeId == challengeId) ?? throw new KeyNotFoundException("Challenge not found");
+        User user = await _userService.GetUserAsync(userId);
+        challenge.Participants.Add(user);
+        await _dbContext.SaveChangesAsync();
+        return challenge;
+    }
 }
