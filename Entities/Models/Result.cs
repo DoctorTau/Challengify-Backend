@@ -10,10 +10,6 @@ public class Result
 {
     [Key]
     public int ResultId { get; set; }
-    [Required]
-    public int UserId { get; set; }
-    [Required]
-    public int ChallengeId { get; set; }
     [Required, MaxLength(128)]
     public required string Name { get; set; }
     [MaxLength(512)]
@@ -29,8 +25,6 @@ public class Result
 
     public void Update(Result result)
     {
-        UserId = result.UserId;
-        ChallengeId = result.ChallengeId;
         Name = result.Name;
         Description = result.Description;
         Timestamp = result.Timestamp;

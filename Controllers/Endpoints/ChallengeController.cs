@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 public class ChallengeController : ControllerBase
 {
     private readonly IChallengeService _challengeService;
+    private readonly IResultService _resultService;
 
-    public ChallengeController(IChallengeService challengeService)
+    public ChallengeController(IChallengeService challengeService, IResultService resultService)
     {
         _challengeService = challengeService;
+        _resultService = resultService;
     }
 
     [HttpGet("{id}")]
@@ -81,6 +83,24 @@ public class ChallengeController : ControllerBase
         }
     }
 
+    [HttpGet("/get-result/{resultId}")]
+    public async Task<IActionResult> GetResult(int resultId)
+    {
+        try
+        {
+            var result = await _resultService.GetResultAsync(resultId);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound("Result not found");
+        }
+        catch
+        {
+            return StatusCode(500);
+        }
+    }
+
     [HttpPut("{id}/add-participant"), Authorize]
     public async Task<IActionResult> AddParticipant(int id)
     {
@@ -93,6 +113,37 @@ public class ChallengeController : ControllerBase
         catch (UnauthorizedAccessException)
         {
             return Unauthorized();
+        }
+        catch
+        {
+            return StatusCode(500);
+        }
+    }
+
+    [HttpPut("{id}/add-result"), Authorize]
+    public async Task<IActionResult> AddResult(int id, ResultCreateRequestDto result)
+    {
+        try
+        {
+            int userId = GetUserIdFromToken();
+            ResultCreationDto resultCreationDto = new()
+            {
+                Name = result.Name,
+                Description = result.Description,
+                UserId = userId,
+                ChallengeId = id
+            };
+
+            var newResult = await _resultService.CreateResultAsync(resultCreationDto);
+            return CreatedAtAction("GetResult", new { resultId = newResult.ResultId }, newResult);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound("Challenge not found");
         }
         catch
         {

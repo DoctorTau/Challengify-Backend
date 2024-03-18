@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Challengify.Entities.Models;
 
@@ -27,7 +28,9 @@ public class User
     public UserStatus Status { get; set; } = UserStatus.Regular;
 
     // Navigation properties
+    [InverseProperty("Participants")]
     public virtual ICollection<Challenge> Challenges { get; set; } = [];
+    [InverseProperty("User")]
     public virtual ICollection<Result> Results { get; set; } = [];
 
     public void Update(User user)

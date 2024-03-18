@@ -1,4 +1,5 @@
 using Challengify.Entities.Models;
+using Challengify.Entities.Models.DataTransferObject;
 
 namespace Challengify.Services;
 
@@ -12,7 +13,7 @@ public interface IResultService
     /// </summary>
     /// <param name="result">The result to create.</param>
     /// <returns>The created result.</returns>
-    public Task<Result> CreateResultAsync(Result result);
+    public Task<Result> CreateResultAsync(ResultCreationDto result);
 
     /// <summary>
     /// Retrieves a result by its ID asynchronously.

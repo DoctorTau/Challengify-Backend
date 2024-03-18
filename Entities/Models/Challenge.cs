@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Challengify.Entities.Models;
 
@@ -23,7 +24,9 @@ public class Challenge
     public int Periodicity { get; set; } = 24; // in hours
 
     // Navigation properties
+    [InverseProperty("Challenge")]
     public virtual ICollection<Result> Results { get; set; } = [];
+    [InverseProperty("Challenges")]
     public virtual ICollection<User> Participants { get; set; } = [];
 
     public void Update(Challenge challenge)

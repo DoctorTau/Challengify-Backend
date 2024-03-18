@@ -51,7 +51,11 @@ public class ChallengeService : IChallengeService
 
     public async Task<Challenge> GetChallengeAsync(int challengeId)
     {
-        Challenge challenge = await _dbContext.Challenges.FindAsync(challengeId) ?? throw new KeyNotFoundException("Challenge not found");
+        Challenge challenge = await _dbContext.Challenges
+            .Include(c => c.Results)
+            .Include(c => c.Participants)
+            .FirstOrDefaultAsync(c => c.ChallengeId == challengeId) ?? throw new KeyNotFoundException("Challenge not found");
+
         return challenge;
     }
 
@@ -80,7 +84,7 @@ public class ChallengeService : IChallengeService
 
     public async Task<List<Result>> GetUserResultsAsync(int userId)
     {
-        List<Result> userResults = await _dbContext.Results.Where(r => r.UserId == userId).ToListAsync();
+        List<Result> userResults = await _dbContext.Results.Where(r => r.User.UserId == userId).ToListAsync();
 
         return userResults;
     }
