@@ -20,7 +20,7 @@ public class AppDbContext : DbContext, IAppDbContext
         var dbName = Environment.GetEnvironmentVariable("POSTGRES_DB");
 
         // Construct the connection string
-        var connectionString = $"Host=localhost;Database={dbName};Username={dbUser};Password={dbPassword}";
+        var connectionString = $"Host=db;Database={dbName};Username={dbUser};Password={dbPassword}";
 
         if (!optionsBuilder.IsConfigured)
         {
