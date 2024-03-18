@@ -10,16 +10,10 @@ namespace Challengify.Controllers.Endpoints;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-public class AuthController : ControllerBase
+public class AuthController(IUserService userService, IPasswordService passwordService) : ControllerBase
 {
-    private readonly IUserService _userService;
-    private readonly IPasswordService _passwordService;
-
-    public AuthController(IUserService userService, IPasswordService passwordService)
-    {
-        _userService = userService;
-        _passwordService = passwordService;
-    }
+    private readonly IUserService _userService = userService;
+    private readonly IPasswordService _passwordService = passwordService;
 
     /// <summary>
     /// Registers a new user.

@@ -9,14 +9,9 @@ namespace Challengify.Controllers.Endpoints;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-public class UserController : ControllerBase
+public class UserController(IUserService userService) : ControllerBase
 {
-    private readonly IUserService _userService;
-
-    public UserController(IUserService userService)
-    {
-        _userService = userService;
-    }
+    private readonly IUserService _userService = userService;
 
     /// <summary>
     /// Retrieves a user by their ID.

@@ -10,16 +10,10 @@ namespace Challengify.Controllers.Endpoints;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-public class ChallengeController : ControllerBase
+public class ChallengeController(IChallengeService challengeService, IResultService resultService) : ControllerBase
 {
-    private readonly IChallengeService _challengeService;
-    private readonly IResultService _resultService;
-
-    public ChallengeController(IChallengeService challengeService, IResultService resultService)
-    {
-        _challengeService = challengeService;
-        _resultService = resultService;
-    }
+    private readonly IChallengeService _challengeService = challengeService;
+    private readonly IResultService _resultService = resultService;
 
     /// <summary>
     /// Retrieves a challenge by its ID.
