@@ -3,6 +3,11 @@ using Challengify.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+namespace Challengify.Controllers.Endpoints;
+
+/// <summary>
+/// Represents the controller for managing challenges.
+/// </summary>
 [Route("api/[controller]")]
 [ApiController]
 public class ChallengeController : ControllerBase
@@ -16,6 +21,11 @@ public class ChallengeController : ControllerBase
         _resultService = resultService;
     }
 
+    /// <summary>
+    /// Retrieves a challenge by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the challenge to retrieve.</param>
+    /// <returns>An <see cref="IActionResult"/> representing the response of the operation.</returns>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetChallengeById(int id)
     {
@@ -27,6 +37,14 @@ public class ChallengeController : ControllerBase
         return Ok(challenge);
     }
 
+    /// <summary>
+    /// Creates a new challenge.
+    /// </summary>
+    /// <param name="challenge">The challenge data.</param>
+    /// <returns>The created challenge.</returns>
+    /// <remarks>
+    /// This endpoint requires the user to be authenticated.
+    /// </remarks>
     [HttpPost("create"), Authorize]
     public async Task<IActionResult> CreateChallenge(ChallengeCreationDto challenge)
     {
@@ -46,6 +64,15 @@ public class ChallengeController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Retrieves challenges associated with the current user.
+    /// </summary>
+    /// <returns>An <see cref="IActionResult"/> representing the response of the action.</returns>
+    /// <remarks>
+    /// This endpoint requires the user to be authenticated.
+    /// If the user is not authorized, an Unauthorized status code will be returned.
+    /// If an error occurs during the retrieval process, a 500 Internal Server Error status code will be returned.
+    /// </remarks>
     [HttpGet("user"), Authorize]
     public async Task<IActionResult> GetUserChallenges()
     {
@@ -65,6 +92,11 @@ public class ChallengeController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Retrieves the results of a challenge with the specified ID.
+    /// </summary>
+    /// <param name="id">The ID of the challenge.</param>
+    /// <returns>An IActionResult representing the HTTP response.</returns>
     [HttpGet("{id}/results")]
     public async Task<IActionResult> GetChallengeResults(int id)
     {
@@ -83,6 +115,11 @@ public class ChallengeController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Retrieves the result with the specified ID.
+    /// </summary>
+    /// <param name="resultId">The ID of the result to retrieve.</param>
+    /// <returns>An <see cref="IActionResult"/> representing the result of the operation.</returns>
     [HttpGet("/get-result/{resultId}")]
     public async Task<IActionResult> GetResult(int resultId)
     {
@@ -101,6 +138,11 @@ public class ChallengeController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Adds a participant to a challenge.
+    /// </summary>
+    /// <param name="id">The ID of the challenge.</param>
+    /// <returns>An <see cref="IActionResult"/> representing the result of the operation.</returns>
     [HttpPut("{id}/add-participant"), Authorize]
     public async Task<IActionResult> AddParticipant(int id)
     {
@@ -120,6 +162,12 @@ public class ChallengeController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Adds a result to a challenge.
+    /// </summary>
+    /// <param name="id">The ID of the challenge.</param>
+    /// <param name="result">The result to be added.</param>
+    /// <returns>An <see cref="IActionResult"/> representing the result of the operation.</returns>
     [HttpPut("{id}/add-result"), Authorize]
     public async Task<IActionResult> AddResult(int id, ResultCreateRequestDto result)
     {
@@ -151,6 +199,10 @@ public class ChallengeController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Retrieves the user ID from the token.
+    /// </summary>
+    /// <returns>The user ID extracted from the token.</returns>
     private int GetUserIdFromToken()
     {
         if (!int.TryParse(User?.FindFirst(c => c.Type.Contains("nameidentifier"))?.Value, out int userId))

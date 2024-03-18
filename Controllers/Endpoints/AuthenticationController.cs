@@ -3,6 +3,11 @@ using Challengify.Entities.Models.DataTransferObject;
 using Challengify.Services;
 using Microsoft.AspNetCore.Mvc;
 
+namespace Challengify.Controllers.Endpoints;
+
+/// <summary>
+/// Controller for handling authentication-related endpoints.
+/// </summary>
 [Route("api/[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
@@ -16,6 +21,11 @@ public class AuthController : ControllerBase
         _passwordService = passwordService;
     }
 
+    /// <summary>
+    /// Registers a new user.
+    /// </summary>
+    /// <param name="userRegistrationDto">The user registration data.</param>
+    /// <returns>The newly created user.</returns>
     [HttpPost("register")]
     public async Task<ActionResult<User>> Register(UserRegistrationDto userRegistrationDto)
     {
@@ -34,6 +44,11 @@ public class AuthController : ControllerBase
         return CreatedAtAction("GetUser", new { controller = "User", id = user.UserId }, user);
     }
 
+    /// <summary>
+    /// Logs in a user with the provided credentials.
+    /// </summary>
+    /// <param name="userLoginDto">The user login data transfer object.</param>
+    /// <returns>An action result containing the logged-in user if successful, or an appropriate error response.</returns>
     [HttpPost("login")]
     public async Task<ActionResult<User>> Login(UserLoginDto userLoginDto)
     {
