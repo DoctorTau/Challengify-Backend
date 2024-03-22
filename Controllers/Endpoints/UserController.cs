@@ -1,4 +1,5 @@
 using Challengify.Entities.Models;
+using Challengify.Entities.Models.DataTransferObject.Response;
 using Challengify.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,16 +20,16 @@ public class UserController(IUserService userService) : ControllerBase
     /// <param name="id">The ID of the user to retrieve.</param>
     /// <returns>The user with the specified ID, or NotFound if the user does not exist.</returns>
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUser(int id)
+    public async Task<ActionResult<UserResponseDto>> GetUser(int id)
     {
-        var user = await _userService.GetUserAsync(id);
+        var user = await _userService.GetUserResponseDtoAsync(id);
 
         if (user == null)
         {
             return NotFound();
         }
 
-        return user;
+        return Ok(user);
     }
 
     /// <summary>
@@ -60,7 +61,7 @@ public class UserController(IUserService userService) : ControllerBase
     {
         await _userService.UpdateUserAsync(user);
 
-        return CreatedAtAction("GetUser", new { id = user.UserId}, user);
+        return CreatedAtAction("GetUser", new { id = user.UserId }, user);
     }
 
     /// <summary>

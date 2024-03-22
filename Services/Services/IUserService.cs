@@ -1,4 +1,5 @@
 using Challengify.Entities.Models;
+using Challengify.Entities.Models.DataTransferObject.Response;
 
 namespace Challengify.Services;
 
@@ -27,6 +28,13 @@ public interface IUserService
     /// <param name="userId">The ID of the user to retrieve.</param>
     /// <returns>The user object corresponding to the specified ID.</returns>
     public Task<User> GetUserAsync(int userId);
+
+    /// <summary>
+    /// Retrieves a UserResponseDto asynchronously based on the provided user ID.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the UserResponseDto.</returns>
+    public Task<UserResponseDto> GetUserResponseDtoAsync(int userId);
 
     /// <summary>
     /// Updates an existing user.

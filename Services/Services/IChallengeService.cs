@@ -1,5 +1,6 @@
 using Challengify.Entities.Models;
 using Challengify.Entities.Models.DataTransferObject;
+using Challengify.Entities.Models.DataTransferObject.Response;
 
 namespace Challengify.Services;
 
@@ -21,6 +22,13 @@ public interface IChallengeService
     /// <param name="challengeId">The ID of the challenge to retrieve.</param>
     /// <returns>The retrieved challenge.</returns>
     public Task<Challenge> GetChallengeAsync(int challengeId);
+
+    /// <summary>
+    /// Retrieves the ChallengeResponseDto asynchronously for the specified challenge ID.
+    /// </summary>
+    /// <param name="challengeId">The ID of the challenge.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the ChallengeResponseDto.</returns>
+    public Task<ChallengeResponseDto> GetChallengeResponseDtoAsync(int challengeId);
 
     /// <summary>
     /// Updates an existing challenge.
@@ -49,7 +57,7 @@ public interface IChallengeService
     /// </summary>
     /// <param name="userId">The ID of the user.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of challenges.</returns>
-    public Task<List<Challenge>> GetUserChallengesAsync(int userId);
+    public Task<List<ChallengeResponseDto>> GetUserChallengesAsync(int userId);
 
     /// <summary>
     /// Adds a participant to a challenge asynchronously.
@@ -57,19 +65,19 @@ public interface IChallengeService
     /// <param name="challengeId">The ID of the challenge.</param>
     /// <param name="userId">The ID of the user to add as a participant.</param>
     /// <returns>A task representing the asynchronous operation. The task result contains the updated Challenge object.</returns>
-    public Task<Challenge> AddParticipantAsync(int challengeId, int userId);
+    public Task<ChallengeResponseDto> AddParticipantAsync(int challengeId, int userId);
 
     /// <summary>
     /// Retrieves the results of a challenge asynchronously.
     /// </summary>
     /// <param name="challengeId">The ID of the challenge.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of results.</returns>
-    public Task<List<Result>> GetChallengeResultsAsync(int challengeId);
+    public Task<List<ResultResponseDto>> GetChallengeResultsAsync(int challengeId);
 
     /// <summary>
     /// Retrieves the results for a specific user asynchronously.
     /// </summary>
     /// <param name="userId">The ID of the user.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="Result"/>.</returns>
-    public Task<List<Result>> GetUserResultsAsync(int userId);
+    public Task<List<ResultResponseDto>> GetUserResultsAsync(int userId);
 }

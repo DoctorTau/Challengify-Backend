@@ -1,5 +1,6 @@
 using Challengify.Entities.Models;
 using Challengify.Entities.Models.DataTransferObject;
+using Challengify.Entities.Models.DataTransferObject.Response;
 
 namespace Challengify.Services;
 
@@ -20,7 +21,21 @@ public interface IResultService
     /// </summary>
     /// <param name="resultId">The ID of the result to retrieve.</param>
     /// <returns>The retrieved result.</returns>
-    public Task<Result> GetResultAsync(int resultId);
+    public Task<ResultResponseDto> GetResultAsync(int resultId);
+
+    /// <summary>
+    /// Retrieves a list of results by challenge ID asynchronously.
+    /// </summary>
+    /// <param name="challengeId">The ID of the challenge.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the list of results.</returns>
+    public Task<List<ResultResponseDto>> GetResultsByChallengeIdAsync(int challengeId);
+
+    /// <summary>
+    /// Retrieves a list of results for a given user ID asynchronously.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of results.</returns>
+    public Task<List<ResultResponseDto>> GetResultsByUserIdAsync(int userId);
 
     /// <summary>
     /// Updates an existing result asynchronously.

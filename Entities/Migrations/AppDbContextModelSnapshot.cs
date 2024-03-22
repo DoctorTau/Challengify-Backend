@@ -34,7 +34,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("ParticipantsUserId");
 
-                    b.ToTable("ChallengeUser");
+                    b.ToTable("ChallengeUser", (string)null);
                 });
 
             modelBuilder.Entity("Challengify.Entities.Models.Challenge", b =>
@@ -63,7 +63,7 @@ namespace Entities.Migrations
 
                     b.HasKey("ChallengeId");
 
-                    b.ToTable("Challenges");
+                    b.ToTable("Challenges", (string)null);
                 });
 
             modelBuilder.Entity("Challengify.Entities.Models.Result", b =>
@@ -103,7 +103,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Results");
+                    b.ToTable("Results", (string)null);
                 });
 
             modelBuilder.Entity("Challengify.Entities.Models.User", b =>
@@ -140,7 +140,7 @@ namespace Entities.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("ChallengeUser", b =>

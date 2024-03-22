@@ -1,5 +1,6 @@
 using Challengify.Entities.Database;
 using Challengify.Entities.Models;
+using Challengify.Entities.Models.DataTransferObject.Response;
 using Challengify.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,7 +36,9 @@ public class UserService : IUserService
 
     public async Task<User> GetUserAsync(int userId)
     {
-        User user = await _dbContext.Users.FindAsync(userId) ?? throw new KeyNotFoundException("User not found");
+        User user = await _dbContext.Users.Include(u => u.Challenges)
+                                          .Include(u => u.Results)
+                                          .FirstOrDefaultAsync(u => u.UserId == userId) ?? throw new KeyNotFoundException("User not found");
         return user;
     }
 
@@ -43,6 +46,12 @@ public class UserService : IUserService
     {
         User user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email) ?? throw new KeyNotFoundException("User not found");
         return user;
+    }
+
+    public Task<UserResponseDto> GetUserResponseDtoAsync(int userId)
+    {
+        User user = GetUserAsync(userId).Result;
+        return Task.FromResult(new UserResponseDto(user));
     }
 
     public async Task<User> UpdateUserAsync(User user)
