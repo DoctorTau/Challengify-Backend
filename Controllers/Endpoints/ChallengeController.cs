@@ -116,6 +116,35 @@ public class ChallengeController(IChallengeService challengeService, IResultServ
     }
 
     /// <summary>
+    /// Retrieves the last result for a challenge.
+    /// </summary>
+    /// <param name="id">The ID of the challenge.</param>
+    /// <returns>The last result for the challenge, or null if not found.</returns>
+    /// <remarks>
+    /// This endpoint requires the user to be authenticated.
+    /// If the challenge is not found, a 404 Not Found response is returned.
+    /// If an error occurs, a 500 Internal Server Error response is returned.
+    /// </remarks>
+    [HttpGet("{id}/last-result"), Authorize]
+    public async Task<ActionResult<ResultResponseDto?>> GetLastResult(int id)
+    {
+        try
+        {
+            int userId = GetUserIdFromToken();
+            ResultResponseDto? result = await _resultService.GetLastResultByChallengeIdAsync(id, userId);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound("Challenge not found");
+        }
+        catch
+        {
+            return StatusCode(500);
+        }
+    }
+
+    /// <summary>
     /// Retrieves the result with the specified ID.
     /// </summary>
     /// <param name="resultId">The ID of the result to retrieve.</param>

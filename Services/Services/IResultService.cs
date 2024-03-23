@@ -50,4 +50,12 @@ public interface IResultService
     /// <param name="resultId">The ID of the result to delete.</param>
     /// <returns>The deleted result.</returns>
     public Task<Result> DeleteResultAsync(int resultId);
+
+    /// <summary>
+    /// Retrieves the last result for a specific challenge and user.
+    /// </summary>
+    /// <param name="id">The ID of the challenge.</param>
+    /// <param name="userId">The ID of the user.</param>
+    /// <returns>The last result for the specified challenge and user.</returns>
+    Task<ResultResponseDto?> GetLastResultByChallengeIdAsync(int challengeId, int userId);
 }

@@ -85,4 +85,16 @@ public class ResultService : IResultService
         List<ResultResponseDto> resultResponseDtos = results.Select(r => new ResultResponseDto(r)).ToList();
         return resultResponseDtos;
     }
+
+    public async Task<ResultResponseDto?> GetLastResultByChallengeIdAsync(int challengeId, int userId)
+    {
+        // Find the last result for the specified challenge and user. If no result is found, return null.
+        Result? result = await _dbContext.Results.Include(r => r.User)
+                                                .Include(r => r.Challenge)
+                                                .Where(r => r.Challenge.ChallengeId == challengeId && r.User.UserId == userId)
+                                                .OrderByDescending(r => r.Timestamp)
+                                                .FirstOrDefaultAsync();
+
+        return result == null ? null : new ResultResponseDto(result);
+    }
 }
