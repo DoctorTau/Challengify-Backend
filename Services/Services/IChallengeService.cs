@@ -68,6 +68,14 @@ public interface IChallengeService
     public Task<ChallengeResponseDto> AddParticipantAsync(int challengeId, int userId);
 
     /// <summary>
+    /// Joins a challenge with the specified join code for the given user.
+    /// </summary>
+    /// <param name="joinCode">The join code of the challenge.</param>
+    /// <param name="userId">The ID of the user joining the challenge.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the response DTO for the joined challenge.</returns>
+    public Task<ChallengeResponseDto> JoinChallengeAsync(string joinCode, int userId);
+
+    /// <summary>
     /// Retrieves the results of a challenge asynchronously.
     /// </summary>
     /// <param name="challengeId">The ID of the challenge.</param>

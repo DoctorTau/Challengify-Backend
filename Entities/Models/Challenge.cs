@@ -22,6 +22,7 @@ public class Challenge
     public string Description { get; set; } = String.Empty;
     public DateTime StartDate { get; set; } = DateTime.Now.ToUniversalTime();
     public int Periodicity { get; set; } = 24; // in hours
+    public string JoinCode { get; set; } = Guid.NewGuid().ToString();
 
     // Navigation properties
     [InverseProperty("Challenge")]

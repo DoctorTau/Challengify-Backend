@@ -22,14 +22,25 @@ public class UserController(IUserService userService) : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<UserResponseDto>> GetUser(int id)
     {
-        var user = await _userService.GetUserResponseDtoAsync(id);
-
-        if (user == null)
+        try
         {
-            return NotFound();
-        }
+            var user = await _userService.GetUserResponseDtoAsync(id);
 
-        return Ok(user);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            return Ok(user);
+        }
+        catch(KeyNotFoundException)
+        {
+            return NotFound("User not found");
+        }
+        catch
+        {
+            return StatusCode(500);
+        }
     }
 
     /// <summary>

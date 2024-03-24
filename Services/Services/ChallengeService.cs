@@ -3,6 +3,7 @@ using Challengify.Entities.Models;
 using Challengify.Entities.Models.DataTransferObject;
 using Challengify.Entities.Models.DataTransferObject.Response;
 using Microsoft.EntityFrameworkCore;
+using Services.Utils;
 
 namespace Challengify.Services;
 
@@ -10,15 +11,18 @@ public class ChallengeService : IChallengeService
 {
     private readonly IAppDbContext _dbContext;
     private readonly IUserService _userService;
+    private readonly IChallengeCodeGenerator _challengeCodeGenerator;
 
-    public ChallengeService(IAppDbContext dbContext, IUserService userService)
+    public ChallengeService(IAppDbContext dbContext, IUserService userService, IChallengeCodeGenerator challengeCodeGenerator)
     {
         _dbContext = dbContext;
         _userService = userService;
+        _challengeCodeGenerator = challengeCodeGenerator;
     }
 
     public async Task<Challenge> CreateChallengeAsync(Challenge challenge)
     {
+        challenge.JoinCode = await CreateJoinCode(challenge);
         await _dbContext.Challenges.AddAsync(challenge);
         await _dbContext.SaveChangesAsync();
         return challenge;
@@ -36,10 +40,7 @@ public class ChallengeService : IChallengeService
             Participants = [user]
         };
 
-        await _dbContext.Challenges.AddAsync(newChallenge);
-        await _dbContext.SaveChangesAsync();
-
-        return newChallenge;
+        return await CreateChallengeAsync(newChallenge);
     }
 
     public async Task<Challenge> DeleteChallengeAsync(int challengeId)
@@ -93,6 +94,17 @@ public class ChallengeService : IChallengeService
         return new ChallengeResponseDto(challenge);
     }
 
+    public async Task<ChallengeResponseDto> JoinChallengeAsync(string joinCode, int userId)
+    {
+        Console.WriteLine(joinCode);
+        Challenge challenge = await _dbContext.Challenges.FirstOrDefaultAsync(c => c.JoinCode == joinCode)
+            ?? throw new KeyNotFoundException("Challenge not found");
+
+        Console.WriteLine(challenge.ChallengeId);
+
+        return await AddParticipantAsync(challenge.ChallengeId, userId);
+    }
+
     public async Task<List<ResultResponseDto>> GetUserResultsAsync(int userId)
     {
         List<Result> userResults = await _dbContext.Results.Include(r => r.User)
@@ -110,5 +122,18 @@ public class ChallengeService : IChallengeService
         List<ResultResponseDto> resultResponseDtos = challengeResults.Select(r => new ResultResponseDto(r)).ToList();
         return resultResponseDtos;
     }
+
+    private async Task<string> CreateJoinCode(Challenge challenge)
+    {
+        do
+        {
+            var joinCode = _challengeCodeGenerator.GenerateJoinCode(challenge.ChallengeId, challenge.StartDate);
+            if (!await _dbContext.Challenges.AnyAsync(c => c.JoinCode == joinCode))
+            {
+                return joinCode;
+            }
+        } while (true);
+    }
+
 
 }

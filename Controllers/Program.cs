@@ -3,6 +3,7 @@ using Challengify.Entities.Database;
 using Challengify.Services;
 using DotNetEnv;
 using Microsoft.IdentityModel.Tokens;
+using Services.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IChallengeService, ChallengeService>();
 builder.Services.AddScoped<IResultService, ResultService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddScoped<IChallengeCodeGenerator, ChallengeCodeGenerator>();
 
 builder.Services.AddAuthentication().AddJwtBearer(
     options =>

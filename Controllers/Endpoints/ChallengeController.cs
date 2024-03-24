@@ -42,13 +42,13 @@ public class ChallengeController(IChallengeService challengeService, IResultServ
     /// This endpoint requires the user to be authenticated.
     /// </remarks>
     [HttpPost("create"), Authorize]
-    public async Task<IActionResult> CreateChallenge(ChallengeCreationDto challenge)
+    public async Task<ActionResult<ChallengeResponseDto>> CreateChallenge(ChallengeCreationDto challenge)
     {
         try
         {
             int userId = GetUserIdFromToken();
             var newChallenge = await _challengeService.CreateChallengeAsync(challenge, userId);
-            return CreatedAtAction("GetChallengeById", new { id = newChallenge.ChallengeId }, newChallenge);
+            return CreatedAtAction("GetChallengeById", new { id = newChallenge.ChallengeId }, new ChallengeResponseDto(newChallenge));
         }
         catch (UnauthorizedAccessException)
         {
@@ -218,11 +218,46 @@ public class ChallengeController(IChallengeService challengeService, IResultServ
     }
 
     /// <summary>
+    /// Joins a challenge with the specified join code.
+    /// </summary>
+    /// <param name="joinCode">The join code of the challenge.</param>
+    /// <returns>An IActionResult representing the result of the join operation.</returns>
+    /// <remarks>
+    /// This method is used to join a challenge by providing the join code. It verifies the user's authorization,
+    /// retrieves the user ID from the token, and calls the JoinChallengeAsync method of the challenge service to
+    /// join the challenge. If the join code is invalid, a KeyNotFoundException is thrown. If the user is not authorized,
+    /// an UnauthorizedAccessException is thrown. If any other error occurs, a 500 Internal Server Error is returned.
+    /// </remarks>
+    [HttpPut("{joinCode}/join"), Authorize]
+    public async Task<IActionResult> JoinChallenge(string joinCode)
+    {
+        try
+        {
+            Console.WriteLine(joinCode);
+            int userId = GetUserIdFromToken();
+            var challenge = await _challengeService.JoinChallengeAsync(joinCode, userId);
+            return Ok(challenge);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound("Challenge not found");
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized();
+        }
+        catch
+        {
+            return StatusCode(500);
+        }
+    }
+
+    /// <summary>
     /// Adds a result to a challenge.
     /// </summary>
     /// <param name="id">The ID of the challenge.</param>
     /// <param name="result">The result to be added.</param>
-    /// <returns>An <see cref="IActionResult"/> representing the result of the operation.</returns>
+    /// <returns>An <see cref="ActionResult<ResultResponseDto>"/> representing the result of the operation.</returns>
     [HttpPut("{id}/add-result"), Authorize]
     public async Task<ActionResult<ResultResponseDto>> AddResult(int id, ResultCreateRequestDto result)
     {
