@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.3" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.4.1" />
+    <PackageReference Include="minio" Version="6.0.2" />
   </ItemGroup>
 
 </Project>

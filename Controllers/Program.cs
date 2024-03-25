@@ -26,6 +26,7 @@ builder.Services.AddScoped<IChallengeService, ChallengeService>();
 builder.Services.AddScoped<IResultService, ResultService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IChallengeCodeGenerator, ChallengeCodeGenerator>();
+builder.Services.AddScoped<IFileService, MinioService>();
 
 builder.Services.AddAuthentication().AddJwtBearer(
     options =>

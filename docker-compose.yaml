@@ -15,6 +15,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
   db:
     image: postgres
     restart: always
@@ -28,9 +31,24 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     networks:
       - mynet
+  minio:
+    image: minio/minio
+    volumes:
+      - minio_data:/data
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
+    networks:
+      - mynet
+    restart: always
 
 volumes:
   postgres_data:
+  minio_data:
 
 networks:
   mynet:

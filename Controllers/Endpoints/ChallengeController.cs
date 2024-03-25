@@ -12,10 +12,11 @@ namespace Challengify.Controllers.Endpoints;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-public class ChallengeController(IChallengeService challengeService, IResultService resultService) : ControllerBase
+public class ChallengeController(IChallengeService challengeService, IResultService resultService, IFileService fileService) : ControllerBase
 {
     private readonly IChallengeService _challengeService = challengeService;
     private readonly IResultService _resultService = resultService;
+    private readonly IFileService _fileService = fileService;
 
     /// <summary>
     /// Retrieves a challenge by its ID.
@@ -259,20 +260,42 @@ public class ChallengeController(IChallengeService challengeService, IResultServ
     /// <param name="result">The result to be added.</param>
     /// <returns>An <see cref="ActionResult<ResultResponseDto>"/> representing the result of the operation.</returns>
     [HttpPut("{id}/add-result"), Authorize]
-    public async Task<ActionResult<ResultResponseDto>> AddResult(int id, ResultCreateRequestDto result)
+    public async Task<ActionResult<ResultResponseDto>> AddResult(int id, [FromForm] ResultCreateRequestDto result, [FromForm] IFormFile? file = null)
     {
         try
         {
             int userId = GetUserIdFromToken();
+            string customFileName = string.Empty;
+            if (file != null)
+            {
+                customFileName = $"result_{id}_{userId}_{DateTime.Now:yyyyMMddHHmmss}_{file.FileName}";
+
+                var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "files");
+
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                var filePath = Path.Combine(directoryPath, customFileName);
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await file.CopyToAsync(stream);
+
+            }
+
             ResultCreationDto resultCreationDto = new()
             {
                 Name = result.Name,
                 Description = result.Description,
                 UserId = userId,
-                ChallengeId = id
+                ChallengeId = id,
+                MediaPath = file != null ? customFileName : ""
             };
 
             var newResult = await _resultService.CreateResultAsync(resultCreationDto);
+            if (file != null)
+                await _fileService.UploadFileAsync(customFileName, file.OpenReadStream(), file.ContentType);
+
             return CreatedAtAction("GetResult", new { resultId = newResult.ResultId }, new ResultResponseDto(newResult));
         }
         catch (UnauthorizedAccessException)
@@ -283,11 +306,31 @@ public class ChallengeController(IChallengeService challengeService, IResultServ
         {
             return NotFound("Challenge not found");
         }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return StatusCode(500);
+        }
+    }
+
+    [HttpGet("media/{mediaPath}")]
+    public async Task<IActionResult> GetMedia(string mediaPath)
+    {
+        try
+        {
+            var stream = await _fileService.DownloadFileAsync(mediaPath);
+            return File(stream, "image/jpeg");
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound("File not found");
+        }
         catch
         {
             return StatusCode(500);
         }
     }
+
 
     /// <summary>
     /// Retrieves the user ID from the token.
