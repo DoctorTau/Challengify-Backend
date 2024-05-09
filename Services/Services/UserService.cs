@@ -26,6 +26,12 @@ public class UserService : IUserService
         return user;
     }
 
+    public async Task<UserResponseDto> GetUserResponseDtoAsync(int userId)
+    {
+        User user = await GetUserAsync(userId);
+        return new UserResponseDto(user);
+    }
+
     public async Task<User> DeleteUserAsync(int userId)
     {
         User user = await _dbContext.Users.FindAsync(userId) ?? throw new KeyNotFoundException("User not found");
@@ -48,11 +54,7 @@ public class UserService : IUserService
         return user;
     }
 
-    public Task<UserResponseDto> GetUserResponseDtoAsync(int userId)
-    {
-        User user = GetUserAsync(userId).Result;
-        return Task.FromResult(new UserResponseDto(user));
-    }
+    
 
     public async Task<User> UpdateUserAsync(User user)
     {
