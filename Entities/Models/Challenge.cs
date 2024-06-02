@@ -24,11 +24,8 @@ public class Challenge
     public int Periodicity { get; set; } = 24; // in hours
     public string JoinCode { get; set; } = Guid.NewGuid().ToString();
 
-    // Navigation properties
-    [InverseProperty("Challenge")]
-    public virtual ICollection<Result> Results { get; set; } = [];
-    [InverseProperty("Challenges")]
-    public virtual ICollection<User> Participants { get; set; } = [];
+    public virtual IList<int> ResultsIds { get; set; } = [];
+    public virtual IList<int> ParticipantsIds { get; set; } = [];
 
     public void Update(Challenge challenge)
     {

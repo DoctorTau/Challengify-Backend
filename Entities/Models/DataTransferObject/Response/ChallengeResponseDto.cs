@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Challengify.Entities.Models.DataTransferObject.Response;
 
 public class ChallengeResponseDto
@@ -19,7 +21,20 @@ public class ChallengeResponseDto
         StartDate = challenge.StartDate;
         Periodicity = challenge.Periodicity;
         JoinCode = challenge.JoinCode;
-        ResultIds = challenge.Results.Select(r => r.ResultId).ToList();
-        ParticipantIds = challenge.Participants.Select(p => p.UserId).ToList();
+        ResultIds = [.. challenge.ResultsIds];
+        ParticipantIds = [.. challenge.ParticipantsIds];
+    }
+
+    [JsonConstructor]
+    public ChallengeResponseDto(int challengeId, string name, string description, DateTime startDate, int periodicity, string joinCode, List<int> resultIds, List<int> participantIds)
+    {
+        ChallengeId = challengeId;
+        Name = name;
+        Description = description;
+        StartDate = startDate;
+        Periodicity = periodicity;
+        JoinCode = joinCode;
+        ResultIds = resultIds;
+        ParticipantIds = participantIds;
     }
 }

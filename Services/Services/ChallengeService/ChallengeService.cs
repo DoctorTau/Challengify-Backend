@@ -12,12 +12,14 @@ public class ChallengeService : IChallengeService
     private readonly IAppDbContext _dbContext;
     private readonly IUserService _userService;
     private readonly IChallengeCodeGenerator _challengeCodeGenerator;
+    private readonly ICacheService _cacheService;
 
-    public ChallengeService(IAppDbContext dbContext, IUserService userService, IChallengeCodeGenerator challengeCodeGenerator)
+    public ChallengeService(IAppDbContext dbContext, IUserService userService, IChallengeCodeGenerator challengeCodeGenerator, ICacheService cacheService)
     {
         _dbContext = dbContext;
         _userService = userService;
         _challengeCodeGenerator = challengeCodeGenerator;
+        _cacheService = cacheService;
     }
 
     public async Task<Challenge> CreateChallengeAsync(Challenge challenge)
@@ -37,7 +39,7 @@ public class ChallengeService : IChallengeService
             Description = challenge.Description,
             StartDate = DateTime.Now.ToUniversalTime(),
             Periodicity = challenge.Periodicity,
-            Participants = [user]
+            ParticipantsIds = [user.UserId]
         };
 
         return await CreateChallengeAsync(newChallenge);
@@ -53,9 +55,13 @@ public class ChallengeService : IChallengeService
 
     public async Task<Challenge> GetChallengeAsync(int challengeId)
     {
-        Challenge challenge = await _dbContext.Challenges.Include(c => c.Participants)
-                                                         .Include(c => c.Results)
-                                                         .FirstOrDefaultAsync(c => c.ChallengeId == challengeId) ?? throw new KeyNotFoundException("Challenge not found");
+        string cacheKey =  $"challenge_{challengeId}";
+        Challenge? challenge = await _cacheService.GetObjectAsync<Challenge>(cacheKey);
+        if(challenge == null)
+        {
+            challenge = await _dbContext.Challenges .FirstOrDefaultAsync(c => c.ChallengeId == challengeId) ?? throw new KeyNotFoundException("Challenge not found");
+            await _cacheService.SetObjectAsync(cacheKey, challenge, TimeSpan.FromMinutes(5));
+        }
 
         return challenge;
     }
@@ -68,28 +74,33 @@ public class ChallengeService : IChallengeService
 
     public async Task<List<ChallengeResponseDto>> GetUserChallengesAsync(int userId)
     {
-        List<Challenge> userChallenges = await _dbContext.Challenges.Include(c => c.Participants)
-                                                                    .Include(c => c.Results)
-                                                                    .Where(c => c.Participants.Any(p => p.UserId == userId))
-                                                                    .ToListAsync();
+        string cacheKey = $"user_{userId}_challenges";
+        List<ChallengeResponseDto>? userChallenges = await _cacheService.GetObjectAsync<List<ChallengeResponseDto>>(cacheKey);
+        if(userChallenges == null)
+        {
+            userChallenges = (await _dbContext.Challenges.Where(c => c.ParticipantsIds.Any(p => p == userId)).ToListAsync()).Select(c => new ChallengeResponseDto(c)).ToList();
 
-        List<ChallengeResponseDto> challengeResponseDtos = userChallenges.Select(c => new ChallengeResponseDto(c)).ToList();
-        return challengeResponseDtos;
+            await _cacheService.SetObjectAsync(cacheKey, userChallenges, TimeSpan.FromMinutes(5));
+        }
+
+        return userChallenges;
     }
 
     public async Task<Challenge> UpdateChallengeAsync(Challenge challenge)
     {
         Challenge existingChallenge = await _dbContext.Challenges.FindAsync(challenge.ChallengeId) ?? throw new KeyNotFoundException("Challenge not found");
         existingChallenge.Update(challenge);
+        await ClearCache(challenge.ChallengeId);
         await _dbContext.SaveChangesAsync();
         return existingChallenge;
     }
 
     public async Task<ChallengeResponseDto> AddParticipantAsync(int challengeId, int userId)
     {
-        Challenge challenge = await _dbContext.Challenges.Include(c => c.Participants).FirstOrDefaultAsync(c => c.ChallengeId == challengeId) ?? throw new KeyNotFoundException("Challenge not found");
-        User user = await _userService.GetUserAsync(userId);
-        challenge.Participants.Add(user);
+        Challenge challenge = await _dbContext.Challenges.FirstOrDefaultAsync(c => c.ChallengeId == challengeId)
+                              ?? throw new KeyNotFoundException("Challenge not found");
+        challenge.ParticipantsIds.Add(userId);
+        await ClearCache(challengeId);
         await _dbContext.SaveChangesAsync();
         return new ChallengeResponseDto(challenge);
     }
@@ -107,18 +118,24 @@ public class ChallengeService : IChallengeService
 
     public async Task<List<ResultResponseDto>> GetUserResultsAsync(int userId)
     {
-        List<Result> userResults = await _dbContext.Results.Include(r => r.User)
-                                                           .Include(r => r.Challenge)
-                                                           .Where(r => r.User.UserId == userId)
-                                                           .ToListAsync();
-        List<ResultResponseDto> resultResponseDtos = userResults.Select(r => new ResultResponseDto(r)).ToList();
-        return resultResponseDtos;
+        string cacheKey = $"user_{userId}_results";
+        List<ResultResponseDto>? userResults = await _cacheService.GetObjectAsync<List<ResultResponseDto>>(cacheKey);
+
+        if(userResults == null)
+        {
+            userResults = (await _dbContext.Results.Where(r => r.UserId == userId)
+                                                   .ToListAsync()).Select(r => new ResultResponseDto(r)).ToList();
+            await _cacheService.SetObjectAsync(cacheKey, userResults, TimeSpan.FromMinutes(5));
+        }
+
+        return userResults;
     }
 
     public async Task<List<ResultResponseDto>> GetChallengeResultsAsync(int challengeId)
     {
         Challenge challenge = await GetChallengeAsync(challengeId);
-        List<Result> challengeResults = (List<Result>)challenge.Results;
+        List<Result> challengeResults = await _dbContext.Results.Where(r => r.ChallengeId == challenge.ChallengeId)
+                                                               .ToListAsync();
         List<ResultResponseDto> resultResponseDtos = challengeResults.Select(r => new ResultResponseDto(r)).ToList();
         return resultResponseDtos;
     }
@@ -135,5 +152,10 @@ public class ChallengeService : IChallengeService
         } while (true);
     }
 
-
+    private async Task ClearCache(int challengeId)
+    {
+        await _cacheService.RemoveAsync($"challenge_{challengeId}");
+        await _cacheService.RemoveAsync($"user_{challengeId}_challenges");
+        await _cacheService.RemoveAsync($"user_{challengeId}_results");
+    }
 }

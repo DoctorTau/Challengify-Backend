@@ -11,12 +11,14 @@ public class ResultService : IResultService
     private readonly IAppDbContext _dbContext;
     private readonly IUserService _userService;
     private readonly IChallengeService _challengeService;
+    private readonly ICacheService _cacheService;
 
-    public ResultService(IAppDbContext dbContext, IUserService userService, IChallengeService challengeService)
+    public ResultService(IAppDbContext dbContext, IUserService userService, IChallengeService challengeService, ICacheService cacheService)
     {
         _dbContext = dbContext;
         _userService = userService;
         _challengeService = challengeService;
+        _cacheService = cacheService;
     }
 
     public async Task<Result> CreateResultAsync(ResultCreationDto result)
@@ -29,8 +31,8 @@ public class ResultService : IResultService
             Name = result.Name,
             Description = result.Description,
             MediaPath = result.MediaPath,
-            User = user,
-            Challenge = challenge,
+            UserId = user.UserId,
+            ChallengeId = challenge.ChallengeId,
             Timestamp = DateTime.Now.ToUniversalTime()
         };
 
@@ -38,6 +40,7 @@ public class ResultService : IResultService
 
         await _dbContext.Results.AddAsync(newResult);
         await _dbContext.SaveChangesAsync();
+        await _cacheService.RemoveAsync($"challenge_{newResult.ChallengeId}_user_{newResult.UserId}_last_result");
 
         return newResult;
     }
@@ -46,15 +49,15 @@ public class ResultService : IResultService
     {
         Result result = await _dbContext.Results.FindAsync(resultId) ?? throw new KeyNotFoundException("Result not found");
         _dbContext.Results.Remove(result);
+        await _cacheService.RemoveAsync($"challenge_{result.ChallengeId}_user_{result.UserId}_last_result");
         await _dbContext.SaveChangesAsync();
         return result;
     }
 
     public async Task<ResultResponseDto> GetResultAsync(int resultId)
     {
-        Result result = await _dbContext.Results.Include(r => r.User)
-                                                .Include(r => r.Challenge)
-                                                .FirstOrDefaultAsync(r => r.ResultId == resultId) ?? throw new KeyNotFoundException("Result not found");
+        Result result = await _dbContext.Results.FirstOrDefaultAsync(r => r.ResultId == resultId)
+                        ?? throw new KeyNotFoundException("Result not found");
 
         return new ResultResponseDto(result);
     }
@@ -63,15 +66,14 @@ public class ResultService : IResultService
     {
         Result existingResult = await _dbContext.Results.FindAsync(result.ResultId) ?? throw new KeyNotFoundException("Result not found");
         existingResult.Update(result);
+        await _cacheService.RemoveAsync($"challenge_{existingResult.ChallengeId}_user_{existingResult.UserId}_last_result");
         await _dbContext.SaveChangesAsync();
         return existingResult;
     }
 
     public async Task<List<ResultResponseDto>> GetResultsByChallengeIdAsync(int challengeId)
     {
-        List<Result> results = await _dbContext.Results.Include(r => r.User)
-                                                       .Include(r => r.Challenge)
-                                                       .Where(r => r.Challenge.ChallengeId == challengeId)
+        List<Result> results = await _dbContext.Results.Where(r => r.ChallengeId == challengeId)
                                                        .ToListAsync();
         List<ResultResponseDto> resultResponseDtos = results.Select(r => new ResultResponseDto(r)).ToList();
         return resultResponseDtos;
@@ -80,7 +82,7 @@ public class ResultService : IResultService
     public async Task<List<ResultResponseDto>> GetResultsByUserIdAsync(int userId)
     {
         List<Result> results = await _dbContext.Results
-            .Where(r => r.User.UserId == userId)
+            .Where(r => r.UserId == userId)
             .ToListAsync();
         List<ResultResponseDto> resultResponseDtos = results.Select(r => new ResultResponseDto(r)).ToList();
         return resultResponseDtos;
@@ -88,13 +90,26 @@ public class ResultService : IResultService
 
     public async Task<ResultResponseDto?> GetLastResultByChallengeIdAsync(int challengeId, int userId)
     {
-        // Find the last result for the specified challenge and user. If no result is found, return null.
-        Result? result = await _dbContext.Results.Include(r => r.User)
-                                                .Include(r => r.Challenge)
-                                                .Where(r => r.Challenge.ChallengeId == challengeId && r.User.UserId == userId)
-                                                .OrderByDescending(r => r.Timestamp)
-                                                .FirstOrDefaultAsync();
+        string cacheKey = $"challenge_{challengeId}_user_{userId}_last_result";
+        ResultResponseDto? lastResult = await _cacheService.GetObjectAsync<ResultResponseDto>(cacheKey);
 
-        return result == null ? null : new ResultResponseDto(result);
+        if (lastResult == null)
+        {
+            // Find the last result for the specified challenge and user. If no result is found, return null.
+            Result? result = await _dbContext.Results.Where(r => r.ChallengeId == challengeId && r.UserId == userId)
+                                                    .OrderByDescending(r => r.Timestamp)
+                                                    .FirstOrDefaultAsync();
+            if (result == null)
+            {
+                return null;
+            }
+
+            lastResult = new ResultResponseDto(result);
+            await _cacheService.SetObjectAsync(cacheKey, lastResult, TimeSpan.FromMinutes(5));
+        }
+
+
+
+        return lastResult;
     }
 }

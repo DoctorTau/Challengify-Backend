@@ -27,11 +27,8 @@ public class User
     public DateTime CreatedAt { get; set; } = DateTime.Now.ToUniversalTime();
     public UserStatus Status { get; set; } = UserStatus.Regular;
 
-    // Navigation properties
-    [InverseProperty("Participants")]
-    public virtual ICollection<Challenge> Challenges { get; set; } = [];
-    [InverseProperty("User")]
-    public virtual ICollection<Result> Results { get; set; } = [];
+    public virtual IList<int> ChallengesIds { get; set; } = [];
+    public virtual IList<int> ResultsIds { get; set; } = [];
 
     public void Update(User user)
     {

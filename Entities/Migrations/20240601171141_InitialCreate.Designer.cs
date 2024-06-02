@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Entities.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240318122852_Remove user and challenge id from result")]
-    partial class Removeuserandchallengeidfromresult
+    [Migration("20240601171141_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,21 +24,6 @@ namespace Entities.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("ChallengeUser", b =>
-                {
-                    b.Property<int>("ChallengesChallengeId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ParticipantsUserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ChallengesChallengeId", "ParticipantsUserId");
-
-                    b.HasIndex("ParticipantsUserId");
-
-                    b.ToTable("ChallengeUser");
-                });
 
             modelBuilder.Entity("Challengify.Entities.Models.Challenge", b =>
                 {
@@ -53,13 +38,25 @@ namespace Entities.Migrations
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
 
+                    b.Property<string>("JoinCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<int[]>("ParticipantsIds")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
                     b.Property<int>("Periodicity")
                         .HasColumnType("integer");
+
+                    b.Property<int[]>("ResultsIds")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
@@ -102,10 +99,6 @@ namespace Entities.Migrations
 
                     b.HasKey("ResultId");
 
-                    b.HasIndex("ChallengeId");
-
-                    b.HasIndex("UserId");
-
                     b.ToTable("Results");
                 });
 
@@ -116,6 +109,10 @@ namespace Entities.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
+
+                    b.Property<int[]>("ChallengesIds")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -138,56 +135,16 @@ namespace Entities.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int[]>("ResultsIds")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("ChallengeUser", b =>
-                {
-                    b.HasOne("Challengify.Entities.Models.Challenge", null)
-                        .WithMany()
-                        .HasForeignKey("ChallengesChallengeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Challengify.Entities.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantsUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Challengify.Entities.Models.Result", b =>
-                {
-                    b.HasOne("Challengify.Entities.Models.Challenge", "Challenge")
-                        .WithMany("Results")
-                        .HasForeignKey("ChallengeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Challengify.Entities.Models.User", "User")
-                        .WithMany("Results")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Challenge");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Challengify.Entities.Models.Challenge", b =>
-                {
-                    b.Navigation("Results");
-                });
-
-            modelBuilder.Entity("Challengify.Entities.Models.User", b =>
-                {
-                    b.Navigation("Results");
                 });
 #pragma warning restore 612, 618
         }

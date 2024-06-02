@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Challengify.Entities.Models.DataTransferObject.Response;
 
 public class ResultResponseDto
@@ -17,7 +19,19 @@ public class ResultResponseDto
         Description = result.Description;
         Timestamp = result.Timestamp;
         MediaPath = result.MediaPath;
-        UserId = result.User.UserId;
-        ChallengeId = result.Challenge.ChallengeId;
+        UserId = result.UserId;
+        ChallengeId = result.ChallengeId;
+    }
+
+    [JsonConstructor]
+    public ResultResponseDto(int resultId, string name, string description, DateTime timestamp, string mediaPath, int userId, int challengeId)
+    {
+        ResultId = resultId;
+        Name = name;
+        Description = description;
+        Timestamp = timestamp;
+        MediaPath = mediaPath;
+        UserId = userId;
+        ChallengeId = challengeId;
     }
 }

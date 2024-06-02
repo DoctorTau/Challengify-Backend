@@ -17,11 +17,8 @@ public class Result
     public DateTime Timestamp { get; set; } = DateTime.Now.ToUniversalTime();
     public string MediaPath { get; set; } = string.Empty;
 
-    // Navigation properties
-    [ForeignKey("UserId")]
-    public virtual required User User { get; set; }
-    [ForeignKey("ChallengeId")]
-    public virtual required Challenge Challenge { get; set; }
+    public virtual required int UserId { get; set; }
+    public virtual required int ChallengeId { get; set; }
 
     public void Update(Result result)
     {

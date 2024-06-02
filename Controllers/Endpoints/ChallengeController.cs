@@ -12,8 +12,9 @@ namespace Challengify.Controllers.Endpoints;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-public class ChallengeController(IChallengeService challengeService, IResultService resultService, IFileService fileService) : ControllerBase
+public class ChallengeController(IUserService userService, IChallengeService challengeService, IResultService resultService, IFileService fileService) : ControllerBase
 {
+    private readonly IUserService _userService= userService;
     private readonly IChallengeService _challengeService = challengeService;
     private readonly IResultService _resultService = resultService;
     private readonly IFileService _fileService = fileService;
@@ -179,7 +180,13 @@ public class ChallengeController(IChallengeService challengeService, IResultServ
         try
         {
             Challenge challenge = await _challengeService.GetChallengeAsync(id) ?? throw new KeyNotFoundException("Challenge not found");
-            List<UserResponseDto> participants = challenge.Participants.Select(p => new UserResponseDto(p)).ToList();
+            List<UserResponseDto> participants = [];
+            foreach (int participantId in challenge.ParticipantsIds)
+            {
+                User participant = await _userService.GetUserAsync(participantId);
+                participants.Add(new UserResponseDto(participant));
+            }
+
             return Ok(participants);
         }
         catch (KeyNotFoundException)

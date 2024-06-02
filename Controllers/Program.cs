@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Challengify.Entities.Database;
 using Challengify.Services;
 using DotNetEnv;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.IdentityModel.Tokens;
 using Services.Utils;
 
@@ -27,6 +28,13 @@ builder.Services.AddScoped<IResultService, ResultService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IChallengeCodeGenerator, ChallengeCodeGenerator>();
 builder.Services.AddScoped<IFileService, MinioService>();
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = Environment.GetEnvironmentVariable("REDIS_URL")!;
+});
+builder.Services.AddScoped<ICacheService, RedisCacheService>();
+
 
 builder.Services.AddAuthentication().AddJwtBearer(
     options =>

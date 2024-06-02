@@ -15,7 +15,7 @@ public class UserResponseDto
         Name = user.Name;
         Email = user.Email;
         CreatedAt = user.CreatedAt;
-        ChallengeIds = user.Challenges.Select(c => c.ChallengeId).ToList();
-        ResultIds = user.Results.Select(r => r.ResultId).ToList();
+        ChallengeIds = [.. user.ChallengesIds];
+        ResultIds = [.. user.ResultsIds];
     }
 }
