@@ -1,0 +1,26 @@
+# Используем официальный образ PostgreSQL как базовый
+FROM postgres:latest
+
+# Установка cron и утилит для работы с файлами бэкапов
+RUN apt-get update && apt-get install -y cron \
+    && rm -rf /var/lib/apt/lists/*
+
+# Добавление скриптов для бэкапа и восстановления
+COPY pg-scripts/backup-script.sh /usr/local/bin/backup-script.sh
+COPY pg-scripts/restore-script.sh /usr/local/bin/restore-script.sh
+COPY crontab /etc/cron.d/backup-cron
+
+# Выдача прав на выполнение скриптов
+RUN chmod +x /usr/local/bin/backup-script.sh \
+    && chmod +x /usr/local/bin/restore-script.sh \
+    && chmod 0644 /etc/cron.d/backup-cron \
+    && crontab /etc/cron.d/backup-cron
+
+# Создание директории для бэкапов
+RUN mkdir -p /backups
+
+# Папка для логов cron
+RUN touch /var/log/cron.log
+
+# Команда для запуска cron и PostgreSQL
+CMD cron && docker-entrypoint.sh postgres
