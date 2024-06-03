@@ -26,14 +26,10 @@ This solution can be run in a Docker container. The docker-compose.yaml file in 
 
 Environment variables are used to store sensitive information for your application. These are stored in the .env file in the root directory of your project. This file should not be checked into source control.
 
-# Running the Solution
+## Running the Solution
 
 To run the solution, you need to have .NET installed on your machine. You can then use the `dotnet run` command in the root directory of the solution.
 
-# Contributing
+## Backups usage
 
-Contributions are welcome. Please make sure to write tests for your changes and follow the existing coding style.
-
-# License
-
-This project is licensed under the MIT License.
+You can find information about creating the backups [here](./backup-usage.md).
