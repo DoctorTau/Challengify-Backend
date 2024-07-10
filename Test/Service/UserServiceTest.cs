@@ -7,7 +7,6 @@ using MockQueryable.Moq;
 
 namespace Test.Service
 {
-
     public class UserServiceTests
     {
         private readonly List<User> _users;
@@ -160,5 +159,4 @@ namespace Test.Service
             Assert.Equal("User not found", exception.Message);
         }
     }
-
 }
